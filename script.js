@@ -52,13 +52,22 @@ function setupEventListeners() {
     document.getElementById('closeStatementModal').addEventListener('click', closeStatementModal);
     document.getElementById('cancelExpense').addEventListener('click', closeExpenseModal);
     document.getElementById('cancelGoal').addEventListener('click', closeGoalModal);
-    // Statement modal actions
-    document.getElementById('printStatementBtn').addEventListener('click', printStatement);
+    // Statement modal action: one Print (PDF) button only
+    document.getElementById('savePdfBtn').addEventListener('click', saveStatementPdf);
     
     // Forms
     expenseForm.addEventListener('submit', handleExpenseSubmit);
     goalForm.addEventListener('submit', handleGoalSubmit);
     // no budget form
+    // Category "Other" toggle
+    const categorySelect = document.getElementById('expenseCategory');
+    categorySelect.addEventListener('change', function() {
+        const grp = document.getElementById('customCategoryGroup');
+        grp.style.display = this.value === 'other' ? 'block' : 'none';
+        if (this.value !== 'other') {
+            document.getElementById('customCategory').value = '';
+        }
+    });
     
     // Set goal button
     document.getElementById('setGoalBtn').addEventListener('click', openGoalModal);
@@ -305,7 +314,13 @@ function handleExpenseSubmit(e) {
     const editingId = expenseForm.dataset.editingId;
     const description = document.getElementById('expenseDescription').value.trim();
     let amount = parseFloat(document.getElementById('expenseAmount').value);
-    const category = document.getElementById('expenseCategory').value;
+    let category = document.getElementById('expenseCategory').value;
+    if (category === 'other') {
+        const custom = document.getElementById('customCategory').value.trim();
+        if (custom) {
+            category = custom.toLowerCase();
+        }
+    }
     const date = document.getElementById('expenseDate').value;
     
     if (!description || !category || !date) {
@@ -467,6 +482,33 @@ function printStatement() {
     win.focus();
     win.print();
     win.close();
+}
+
+function saveStatementTxt() {
+    const text = document.getElementById('statementText').textContent;
+    const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `spendwise-statement-${new Date().toISOString().slice(0,10)}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+function saveStatementPdf() {
+    // Use the browser's print-to-PDF via a printable window for compatibility
+    const text = document.getElementById('statementText').textContent;
+    const win = window.open('', '', 'width=800,height=600');
+    win.document.write('<html><head><title>SpendWise Statement</title></head><body>');
+    win.document.write('<pre style="font-family:Courier New, monospace; white-space:pre; line-height:1.5; font-size:12px;">');
+    win.document.write(text.replace(/</g, '&lt;').replace(/>/g, '&gt;'));
+    win.document.write('</pre></body></html>');
+    win.document.close();
+    win.focus();
+    // Show print dialog so user can choose "Save as PDF"
+    win.print();
 }
 
 function generateStatementText(items) {

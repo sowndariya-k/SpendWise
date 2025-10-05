@@ -235,7 +235,12 @@
                         <option value="rent">Rent</option>
                         <option value="bills">Bills</option>
                         <option value="personal">Personal Growth</option>
+                        <option value="other">Other</option>
                     </select>
+                </div>
+                <div class="form-group" id="customCategoryGroup" style="display:none;">
+                    <label for="customCategory">Custom Category</label>
+                    <input type="text" id="customCategory" placeholder="Enter category" maxlength="30">
                 </div>
                 <div class="form-group">
                     <label for="expenseDate">Date</label>
@@ -285,7 +290,7 @@
                 <pre id="statementText" style="white-space: pre; background:#f8f9fa; padding:15px; border-radius:8px; max-height:60vh; overflow:auto; font-family: 'Courier New', Courier, monospace; font-size:14px; line-height:1.5;"></pre>
             </div>
             <div class="modal-actions">
-                <button type="button" class="btn-secondary" id="printStatementBtn">Print</button>
+                <button type="button" class="btn-primary" id="savePdfBtn">Print</button>
             </div>
         </div>
     </div>

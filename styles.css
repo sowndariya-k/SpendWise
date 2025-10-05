@@ -418,11 +418,13 @@ body {
     font-weight: 700;
     color: #1e3c72;
     margin-bottom: 5px;
+    text-align: right;
 }
 
 .category-count {
     color: #666;
     font-size: 0.9rem;
+    text-align: center;
 }
 
 /* Expenses Section */

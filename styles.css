@@ -757,6 +757,13 @@ body {
     .fab { display: flex; }
 }
 
+/* Show FAB only on dashboard (hide on login) */
+#loginPage.active ~ .fab { display: none !important; }
+#dashboardPage.active ~ .fab { display: flex; }
+
+/* Hide FAB when any modal is active (e.g., statement/expense forms) */
+.modal.active ~ .fab { display: none !important; }
+
 /* Animation delays for staggered effect */
 .category-card:nth-child(1) { animation-delay: 0.1s; }
 .category-card:nth-child(2) { animation-delay: 0.2s; }

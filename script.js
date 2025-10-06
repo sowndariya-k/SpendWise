@@ -171,7 +171,6 @@ function loadUserData() {
     const userData = localStorage.getItem('spendWiseUser');
     const expensesData = localStorage.getItem('spendWiseExpenses');
     const goalData = localStorage.getItem('spendWiseGoal');
-    // simplified: no budgets or themes
     
     if (userData) {
         currentUser = JSON.parse(userData);
@@ -185,8 +184,6 @@ function loadUserData() {
     if (goalData) {
         savingsGoal = parseFloat(goalData);
     }
-    
-    // no-op
 }
 
 function saveUserData() {
@@ -195,7 +192,6 @@ function saveUserData() {
     }
     localStorage.setItem('spendWiseExpenses', JSON.stringify(expenses));
     localStorage.setItem('spendWiseGoal', savingsGoal.toString());
-    // simplified: no budgets or themes
 }
 
 // Dashboard updates
@@ -204,8 +200,7 @@ function updateDashboard() {
     updateCategories();
     updateExpensesList();
     updateSavingsProgress();
-    checkLowBalance();
-    // no budget alerts
+    checkLowBalance()
 }
 
 function updateBalance() {
@@ -214,9 +209,9 @@ function updateBalance() {
     
     currentUser.currentBalance = remainingBalance;
     
-    document.getElementById('totalBalance').textContent = `$${remainingBalance.toFixed(2)}`;
-    document.getElementById('totalSpent').textContent = `$${totalSpent.toFixed(2)}`;
-    document.getElementById('remainingBalance').textContent = `$${remainingBalance.toFixed(2)}`;
+    document.getElementById('totalBalance').textContent = `₹${remainingBalance.toFixed(2)}`;
+    document.getElementById('totalSpent').textContent = `₹${totalSpent.toFixed(2)}`;
+    document.getElementById('remainingBalance').textContent = `₹${remainingBalance.toFixed(2)}`;
     
     saveUserData();
 }
@@ -229,7 +224,7 @@ function updateCategories() {
         const totalAmount = categoryExpenses.reduce((sum, expense) => sum + expense.amount, 0);
         const count = categoryExpenses.length;
         
-        document.getElementById(`${category}Amount`).textContent = `$${totalAmount.toFixed(2)}`;
+        document.getElementById(`${category}Amount`).textContent = `₹${totalAmount.toFixed(2)}`;
         document.getElementById(`${category}Count`).textContent = `${count} expenses`;
     });
 }
@@ -251,7 +246,7 @@ function updateExpensesList() {
                 <div class="expense-description">${expense.description}</div>
                 <div class="expense-category">${expense.category} • ${new Date(expense.date).toLocaleDateString()}</div>
             </div>
-            <div class="expense-amount">$${expense.amount.toFixed(2)}</div>
+            <div class="expense-amount">₹${expense.amount.toFixed(2)}</div>
             <div class="expense-actions">
                 <button onclick="editExpense(${expense.id})" title="Edit">
                     <i class="fas fa-edit"></i>
@@ -269,26 +264,22 @@ function updateSavingsProgress() {
     const personalExpenses = expenses.filter(expense => expense.category === 'personal');
     const savingsAmount = personalExpenses.reduce((sum, expense) => sum + expense.amount, 0);
     const progressPercentage = Math.min((savingsAmount / savingsGoal) * 100, 100);
-    
-    document.getElementById('savingsAmount').textContent = `$${savingsAmount.toFixed(2)}`;
-    document.getElementById('savingsGoal').textContent = `$${savingsGoal.toFixed(2)}`;
+
+    document.getElementById('savingsAmount').textContent = `₹${savingsAmount.toFixed(2)}`;
+    document.getElementById('savingsGoal').textContent = `₹${savingsGoal.toFixed(2)}`;
     document.getElementById('savingsProgress').style.width = `${progressPercentage}%`;
 }
-
-// simplified: removed budget limits UI
 
 function checkLowBalance() {
     const remainingBalance = currentUser.currentBalance;
     const lowBalanceThreshold = currentUser.startingBalance * 0.1; // 10% of starting balance
     
     if (remainingBalance < lowBalanceThreshold && remainingBalance > 0) {
-        showAlert(`Low balance warning! You have $${remainingBalance.toFixed(2)} remaining.`);
+        showAlert(`Low balance warning! You have ₹${remainingBalance.toFixed(2)} remaining.`);
     } else if (remainingBalance <= 0) {
-        showAlert(`You've exceeded your budget! Current balance: $${remainingBalance.toFixed(2)}`);
+        showAlert(`You've exceeded your budget! Current balance: ₹${remainingBalance.toFixed(2)}`);
     }
 }
-
-// simplified: removed budget alerts
 
 // Expense management
 function openExpenseModal(category = '') {
@@ -530,7 +521,7 @@ function generateStatementText(items) {
     const header = 'SPENDWISE RECEIPT';
     const shop = 'Thank you for using SpendWise';
     const nameLine = `Name: ${currentUser?.name || ''}`;
-    const startBal = `Start: $${(currentUser?.startingBalance || 0).toFixed(2)}`;
+    const startBal = `Start: ₹${(currentUser?.startingBalance || 0).toFixed(2)}`;
     const line = ''.padEnd(COL_DATE + COL_CAT + COL_DESC + COL_AMT + COL_BAL + 8, '-');
 
     let lines = [];
@@ -739,7 +730,7 @@ function createPieChart() {
                     categoryTotals.personal
                 ],
                 backgroundColor: [
-                    '#FF6B6B',
+                    '#e35a5aff',
                     '#4ECDC4',
                     '#45B7D1',
                     '#96CEB4',
@@ -761,7 +752,7 @@ function createPieChart() {
                         label: function(context) {
                             const value = context.parsed;
                             const percentage = ((value / totalSpent) * 100).toFixed(1);
-                            return `${context.label}: $${value.toFixed(2)} (${percentage}%)`;
+                            return `${context.label}: ₹${value.toFixed(2)} (${percentage}%)`;
                         }
                     }
                 }
@@ -807,4 +798,13 @@ function showAlert(message, type = 'error') {
 
 function hideAlert() {
     document.getElementById('alert').classList.remove('show');
+}
+
+// Register service worker for PWA
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./service-worker.js")
+      .then(() => console.log("Service Worker registered"))
+      .catch(err => console.error("SW registration failed:", err));
+  });
 }

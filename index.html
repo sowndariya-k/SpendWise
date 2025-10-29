@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpendWise - Smart Expense Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- App icons (no PWA) -->
+    <link rel="icon" type="image/svg+xml" href="assets/app-icon.svg">
+    <link rel="icon" sizes="192x192" href="/assets/app-icon.svg">
+    <link rel="icon" sizes="512x512" href="/assets/app-icon.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/app-icon.svg">
+    <meta name="application-name" content="SpendWise">
+    <meta name="apple-mobile-web-app-title" content="SpendWise">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta property="og:image" content="/assets/app-icon.svg">
+    <meta name="theme-color" content="#1e3c72">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <!-- Firebase (compat) -->
+        <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <!-- Login Page -->
+    <div id="loginPage" class="page active">
+        <div class="login-container">
+            <div class="login-card">
+                <div class="logo">
+                    <i class="fas fa-wallet"></i>
+                    <h1>SpendWise</h1>
+                    <p>Smart Expense Tracker</p>
+                </div>
+                <div class="quote-container">
+                    <p id="authQuote" class="quote"></p>
+                </div>
+                <form id="loginForm">
+                    <div id="signUpFields">
+                        <div class="input-group">
+                            <i class="fas fa-user"></i>
+                            <input type="text" id="userName" placeholder="Name">
+                        </div>
+                        <div class="input-group">
+                            <i class="fas fa-dollar-sign"></i>
+                            <input type="number" id="initialAmount" placeholder="Initial Amount" min="0" step="0.01">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="userEmail" placeholder="Email" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="userPassword" placeholder="Password" required>
+                    </div>
+                    <button type="submit" class="btn-primary" id="authButton">
+                        <span id="authButtonText">Get Started</span>
+                    </button>
+                </form>
+                <div class="separator">or</div>
+                <button type="button" class="btn-google" id="googleSignInBtn">
+                    <svg viewBox="0 0 48 48" width="24px" height="24px"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.42-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path><path fill="none" d="M0 0h48v48H0z"></path></svg>
+                    <span>Continue with Google</span>
+                </button>
+                <div style="text-align: center; margin-top: 20px;">
+                    <a href="#" id="toggleForm" style="color: #1e3c72; text-decoration: none; font-weight: 600;">Already have an account? Log In</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Page -->
+    <div id="dashboardPage" class="page">
+        <header class="header">
+            <div class="header-content">
+                <div class="logo-small">
+                    <i class="fas fa-wallet"></i>
+                    <span>SpendWise</span>
+                </div>
+                <div class="user-info">
+                    <span id="welcomeUser"></span>
+                    <button id="logoutBtn" class="btn-logout">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- Balance Overview -->
+            <section class="balance-section">
+                <div class="balance-card">
+                    <div class="balance-info">
+                        <h2>Total Balance</h2>
+                        <div class="balance-amount" id="totalBalance">₹0.00</div>
+                    </div>
+                    <div class="balance-stats">
+                        <div class="stat">
+                            <span class="stat-label">Total Spent</span>
+                            <span class="stat-value" id="totalSpent">₹0.00</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Remaining</span>
+                            <span class="stat-value" id="remainingBalance">₹0.00</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Savings Goal Progress -->
+            <section class="savings-section">
+                <div class="savings-card">
+                    <h3>Savings Goal Progress</h3>
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="savingsProgress"></div>
+                        </div>
+                        <div class="progress-text">
+                            <span id="savingsAmount">₹0</span> / <span id="savingsGoal">₹1000</span>
+                        </div>
+                    </div>
+                    <button class="btn-secondary" id="setGoalBtn">Set Goal</button>
+                </div>
+            </section>
+
+
+            <!-- Expense Categories -->
+            <section class="categories-section">
+                <div class="section-header">
+                    <h3>Expense Categories</h3>
+                    <button class="btn-primary" id="addExpenseBtn">
+                        <i class="fas fa-plus"></i>
+                        Add Expense
+                    </button>
+                </div>
+
+                <div class="categories-grid">
+                    <div class="category-card" data-category="entertainment">
+                        <div class="category-header">
+                            <i class="fas fa-gamepad"></i>
+                            <h4>Entertainment</h4>
+                        </div>
+                        <div class="category-amount" id="entertainmentAmount">₹0.00</div>
+                        <div class="category-count" id="entertainmentCount">0 expenses</div>
+                    </div>
+
+                    <div class="category-card" data-category="grocery">
+                        <div class="category-header">
+                            <i class="fas fa-shopping-cart"></i>
+                            <h4>Grocery/Home</h4>
+                        </div>
+                        <div class="category-amount" id="groceryAmount">₹0.00</div>
+                        <div class="category-count" id="groceryCount">0 expenses</div>
+                    </div>
+
+                    <div class="category-card" data-category="rent">
+                        <div class="category-header">
+                            <i class="fas fa-home"></i>
+                            <h4>Rent</h4>
+                        </div>
+                        <div class="category-amount" id="rentAmount">₹0.00</div>
+                        <div class="category-count" id="rentCount">0 expenses</div>
+                    </div>
+
+                    <div class="category-card" data-category="bills">
+                        <div class="category-header">
+                            <i class="fas fa-file-invoice"></i>
+                            <h4>Bills</h4>
+                        </div>
+                        <div class="category-amount" id="billsAmount">₹0.00</div>
+                        <div class="category-count" id="billsCount">0 expenses</div>
+                    </div>
+
+                    <div class="category-card" data-category="personal">
+                        <div class="category-header">
+                            <i class="fas fa-chart-line"></i>
+                            <h4>Personal Growth</h4>
+                        </div>
+                        <div class="category-amount" id="personalAmount">₹0.00</div>
+                        <div class="category-count" id="personalCount">0 expenses</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Charts Section (moved to bottom) -->
+            <section class="charts-section">
+                <div class="chart-card">
+                    <h3>Spending Trends</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="lineChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3>Spending by Category</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="pieChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Recent Expenses -->
+            <section class="expenses-section">
+                <div class="section-header">
+                    <h3>Recent Expenses</h3>
+                    <div class="expense-controls">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="expenseSearch" placeholder="Search expenses...">
+                        </div>
+                        <select id="categoryFilter">
+                            <option value="">All Categories</option>
+                            <option value="entertainment">Entertainment</option>
+                            <option value="grocery">Grocery/Home</option>
+                            <option value="rent">Rent</option>
+                            <option value="bills">Bills</option>
+                            <option value="personal">Personal Growth</option>
+                        </select>
+                        <select id="sortBy">
+                            <option value="date-desc">Date (Newest)</option>
+                            <option value="date-asc">Date (Oldest)</option>
+                            <option value="amount-desc">Amount (High to Low)</option>
+                            <option value="amount-asc">Amount (Low to High)</option>
+                            <option value="category">Category</option>
+                        </select>
+                        <button class="btn-secondary" id="statementBtn">
+                            <i class="fas fa-file-alt"></i>
+                            Statement
+                        </button>
+                        <button class="btn-danger" id="clearAllBtn">
+                            <i class="fas fa-trash"></i>
+                            Clear All
+                        </button>
+                    </div>
+                </div>
+                <div class="expenses-list" id="expensesList">
+                    <!-- Expenses will be dynamically added here -->
+                </div>
+            </section>
+            
+        </main>
+    </div>
+
+    <!-- Add/Edit Expense Modal -->
+    <div id="expenseModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Add Expense</h3>
+                <button class="close-btn" id="closeModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="expenseForm">
+                <div class="form-group">
+                    <label for="expenseDescription">Description</label>
+                    <input type="text" id="expenseDescription" required>
+                </div>
+                <div class="form-group">
+                    <label for="expenseAmount">Amount (optional)</label>
+                    <input type="number" id="expenseAmount" min="0" step="0.01" placeholder="0.00" inputmode="decimal">
+                </div>
+                <div class="form-group">
+                    <label for="expenseCategory">Category</label>
+                    <select id="expenseCategory" required>
+                        <option value="">Select Category</option>
+                        <option value="entertainment">Entertainment</option>
+                        <option value="grocery">Grocery/Home</option>
+                        <option value="rent">Rent</option>
+                        <option value="bills">Bills</option>
+                        <option value="personal">Personal Growth</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group" id="customCategoryGroup" style="display:none;">
+                    <label for="customCategory">Custom Category</label>
+                    <input type="text" id="customCategory" placeholder="Enter category" maxlength="30">
+                </div>
+                <div class="form-group">
+                    <label for="expenseDate">Date</label>
+                    <input type="date" id="expenseDate" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" id="cancelExpense">Cancel</button>
+                    <button type="submit" class="btn-primary">Save Expense</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Set Goal Modal -->
+    <div id="goalModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Set Savings Goal</h3>
+                <button class="close-btn" id="closeGoalModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="goalForm">
+                <div class="form-group">
+                    <label for="savingsGoalInput">Savings Goal Amount</label>
+                    <input type="number" id="savingsGoalInput" min="0" step="0.01" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" id="cancelGoal">Cancel</button>
+                    <button type="submit" class="btn-primary">Set Goal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+
+
+    <!-- Statement Modal -->
+    <div id="statementModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Statement</h3>
+                <button class="close-btn" id="closeStatementModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="form-group">
+                <label>Printable Statement</label>
+                <pre id="statementText" style="white-space: pre; background:#f8f9fa; padding:15px; border-radius:8px; max-height:60vh; overflow:auto; font-family: 'Courier New', Courier, monospace; font-size:14px; line-height:1.5;"></pre>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-primary" id="savePdfBtn">Print</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert -->
+    <div id="alert" class="alert">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span id="alertMessage"></span>
+        <button id="closeAlert">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <!-- FAB: Add Expense (mobile) -->
+    <button id="fabAddExpense" class="fab" aria-label="Add Expense">
+        <i class="fas fa-plus"></i>
+    </button>
+
+    <script src="script.js"></script>
+</body>
+</html>

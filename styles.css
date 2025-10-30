@@ -7,11 +7,33 @@
 
 body {
     font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #101727; /* A deep, modern navy blue */
+    background-color: #101727; /* A deep, modern navy blue */
     min-height: 100vh;
     color: #E0E7FF; /* A light, soft blue for text */
     overflow-x: hidden;
+    position: relative;
 }
+
+/* Animated Aurora Background for Dashboard */
+#dashboardPage.active::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 10% 20%, rgba(58, 123, 213, 0.15), transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(69, 183, 209, 0.15), transparent 40%);
+    animation: aurora 20s infinite linear;
+    z-index: -1;
+}
+
+@keyframes aurora {
+    0% { background-position: 0% 50%, 0% 50%; }
+    50% { background-position: 100% 50%, 100% 50%; }
+    100% { background-position: 0% 50%, 0% 50%; }
+}
+
 
 /* Page Management */
 .page {
@@ -69,8 +91,13 @@ body {
     font-style: italic;
     color: #555;
     text-align: center;
-    opacity: 0;
-    transition: opacity 0.7s ease-in-out;
+    opacity: 0; /* Start hidden */
+    transform: translateY(10px); /* Start slightly lower */
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+.quote.show {
+    opacity: 1; /* Fade in */
+    transform: translateY(0); /* Slide to original position */
 }
 
 .logo {

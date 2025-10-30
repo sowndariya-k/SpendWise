@@ -1,20 +1,30 @@
 {
     "name": "SpendWise",
     "short_name": "SpendWise",
-    "start_url": "/index.html",
+    "description": "A smart expense tracker to manage your finances.",
+    "start_url": "index.html",
     "display": "standalone",
     "background_color": "#1e3c72",
     "theme_color": "#1e3c72",
+    "orientation": "portrait-primary",
     "icons": [
         {
             "src": "assets/app-icon.svg",
-            "sizes": "192x192",
-            "type": "image/svg+xml"
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "any"
         },
         {
-            "src": "assets/app-icon.svg",
+            "src": "assets/app-icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "assets/app-icon-512.png",
             "sizes": "512x512",
-            "type": "image/svg+xml"
+            "type": "image/png",
+            "purpose": "any maskable"
         }
     ]
 }

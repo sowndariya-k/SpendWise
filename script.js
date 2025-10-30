@@ -207,11 +207,13 @@ function initializeQuotes() {
 
     // Function to show a quote with a fade effect
     function showQuote(element, quoteText) {
-        element.style.opacity = '0';
+        // Fade out and slide up
+        element.classList.remove('show');
         setTimeout(() => {
             element.textContent = `"${quoteText}"`;
-            element.style.opacity = '1';
-        }, 700); // Corresponds to CSS transition time
+            // Fade in and slide down
+            element.classList.add('show');
+        }, 500); // Half of the CSS transition duration
     }
 
     // Function to rotate quotes

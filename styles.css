@@ -15,8 +15,7 @@ body {
 }
 
 /* Animated Aurora Background (for Splash and Dashboard) */
-#splashScreen.active::before,
-#dashboardPage.active::before {
+#mobile-splash-screen::before, #dashboardPage.active::before {
     content: '';
     position: fixed;
     top: 0;
@@ -24,7 +23,8 @@ body {
     width: 100%;
     height: 100%;
     background: radial-gradient(circle at 10% 20%, rgba(58, 123, 213, 0.15), transparent 40%),
-                radial-gradient(circle at 80% 70%, rgba(69, 183, 209, 0.15), transparent 40%);
+                radial-gradient(circle at 80% 70%, rgba(69, 183, 209, 0.15), transparent 40%),
+                radial-gradient(circle at 50% 90%, rgba(90, 69, 209, 0.1), transparent 50%); /* Added a third color */
     animation: aurora 20s infinite linear;
     z-index: -1;
 }
@@ -47,30 +47,6 @@ body {
     display: block; /* The active page is shown */
 }
 
-/* Splash Screen Styles */
-#splashScreen {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: fixed; /* Cover the entire screen */
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 2000; /* Stay on top of everything */
-    opacity: 1;
-    transition: opacity 0.8s ease-out; /* Smooth fade-out transition */
-}
-
-#splashScreen.hidden {
-    opacity: 0;
-    pointer-events: none; /* Allow clicks to go through after it's hidden */
-}
-
-#loginPage {
-    display: block;
-}
-
 /* Login Page Styles */
 .login-container {
     display: flex;
@@ -88,8 +64,8 @@ body {
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
     width: 100%;
     max-width: 400px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    animation: slideUp 0.6s ease-out 0.5s both; /* Delayed animation */
+    border: 1px solid rgba(255, 255, 255, 0.2); 
+    animation: slideUp 0.6s ease-out both; /* Removed delay, will be controlled by JS */
 }
 
 @keyframes slideUp {
@@ -102,6 +78,53 @@ body {
         transform: translateY(0);
     }
 }
+
+/* --- Mobile Splash Screen --- */
+#mobile-splash-screen {
+    display: none; /* Hidden on desktop by default */
+}
+
+@media (max-width: 768px) {
+    #mobile-splash-screen {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #101727; /* Match body background */
+        z-index: 2000;
+        opacity: 1;
+        transition: opacity 0.8s ease-out, visibility 0.8s;
+        visibility: visible;
+    }
+
+    #mobile-splash-screen.hidden {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+    }
+
+    .splash-logo-container {
+        text-align: center;
+        color: #E0E7FF;
+        animation: float 4s ease-in-out infinite;
+    }
+
+    .splash-logo-container i {
+        font-size: 4rem;
+        margin-bottom: 15px;
+        text-shadow: 0 0 20px rgba(58, 123, 213, 0.7);
+    }
+
+    .splash-logo-container h1 {
+        font-size: 3rem;
+        font-weight: 700;
+    }
+}
+
 
 /* --- Quote Styles --- */
 .quote-container {
@@ -845,6 +868,15 @@ body {
     
     .logo h1 {
         font-size: 2rem;
+    }
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-20px);
     }
 }
 

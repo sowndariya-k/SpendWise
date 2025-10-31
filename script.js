@@ -31,14 +31,23 @@ const statementModal = document.getElementById('statementModal');
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', function() {
-    // --- New Splash Screen Logic ---
-    const splashScreen = document.getElementById('splashScreen');
-    // Hide the splash screen after 2.5 seconds
-    setTimeout(() => {
-        if (splashScreen) {
-            splashScreen.classList.add('hidden');
+    // --- Mobile Splash Screen Logic ---
+    const mobileSplash = document.getElementById('mobile-splash-screen');
+    const loginPage = document.getElementById('loginPage');
+
+    // This logic now specifically handles the mobile splash
+    if (mobileSplash && getComputedStyle(mobileSplash).display !== 'none') {
+        // If the splash is visible (on mobile), hide it after a delay
+        setTimeout(() => {
+            mobileSplash.classList.add('hidden');
+            loginPage.classList.add('active'); // Show login page after splash
+        }, 3000); // 3 seconds for a better effect
+    } else {
+        // If no splash (on desktop), show the login page immediately
+        if (loginPage) {
+            loginPage.classList.add('active');
         }
-    }, 2500); // 2.5 seconds
+    }
 
     // Initialize Firebase (config provided)
     const firebaseConfig = {

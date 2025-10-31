@@ -31,6 +31,15 @@ const statementModal = document.getElementById('statementModal');
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', function() {
+    // --- New Splash Screen Logic ---
+    const splashScreen = document.getElementById('splashScreen');
+    // Hide the splash screen after 2.5 seconds
+    setTimeout(() => {
+        if (splashScreen) {
+            splashScreen.classList.add('hidden');
+        }
+    }, 2500); // 2.5 seconds
+
     // Initialize Firebase (config provided)
     const firebaseConfig = {
         apiKey: "AIzaSyBYJV-P1g_wjfjZbsGGXDww_Tz4PWD_za4",

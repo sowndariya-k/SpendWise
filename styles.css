@@ -14,7 +14,8 @@ body {
     position: relative;
 }
 
-/* Animated Aurora Background for Dashboard */
+/* Animated Aurora Background (for Splash and Dashboard) */
+#splashScreen.active::before,
 #dashboardPage.active::before {
     content: '';
     position: fixed;
@@ -37,11 +38,36 @@ body {
 
 /* Page Management */
 .page {
-    display: none;
+    display: none; /* Pages are hidden by default */
     min-height: 100vh;
+    animation: fadeIn 0.5s ease-out; /* General fade-in for pages */
 }
 
 .page.active {
+    display: block; /* The active page is shown */
+}
+
+/* Splash Screen Styles */
+#splashScreen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed; /* Cover the entire screen */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2000; /* Stay on top of everything */
+    opacity: 1;
+    transition: opacity 0.8s ease-out; /* Smooth fade-out transition */
+}
+
+#splashScreen.hidden {
+    opacity: 0;
+    pointer-events: none; /* Allow clicks to go through after it's hidden */
+}
+
+#loginPage {
     display: block;
 }
 
@@ -63,7 +89,7 @@ body {
     width: 100%;
     max-width: 400px;
     border: 1px solid rgba(255, 255, 255, 0.2);
-    animation: slideUp 0.6s ease-out;
+    animation: slideUp 0.6s ease-out 0.5s both; /* Delayed animation */
 }
 
 @keyframes slideUp {

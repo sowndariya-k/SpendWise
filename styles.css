@@ -81,11 +81,12 @@ body {
 
 /* --- Mobile Splash Screen --- */
 #mobile-splash-screen {
-    display: none; /* Hidden on desktop by default */
+    display: none; /* Hidden by default on all screen sizes */
 }
 
 @media (max-width: 768px) {
-    #mobile-splash-screen {
+    /* Only show the splash screen on mobile when it's active */
+    #mobile-splash-screen.active {
         display: flex;
         justify-content: center;
         align-items: center;

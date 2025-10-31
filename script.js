@@ -35,18 +35,18 @@ document.addEventListener('DOMContentLoaded', function() {
     const mobileSplash = document.getElementById('mobile-splash-screen');
     const loginPage = document.getElementById('loginPage');
 
-    // This logic now specifically handles the mobile splash
-    if (mobileSplash && getComputedStyle(mobileSplash).display !== 'none') {
-        // If the splash is visible (on mobile), hide it after a delay
+    // Check if we are on a mobile-sized screen
+    if (window.innerWidth <= 768) {
+        // On mobile, the splash is already visible. Hide it after a delay.
         setTimeout(() => {
             mobileSplash.classList.add('hidden');
             loginPage.classList.add('active'); // Show login page after splash
         }, 3000); // 3 seconds for a better effect
     } else {
-        // If no splash (on desktop), show the login page immediately
-        if (loginPage) {
-            loginPage.classList.add('active');
-        }
+        // On desktop, hide the splash screen immediately and show the login page.
+        mobileSplash.classList.remove('active');
+        mobileSplash.classList.add('hidden');
+        loginPage.classList.add('active');
     }
 
     // Initialize Firebase (config provided)
